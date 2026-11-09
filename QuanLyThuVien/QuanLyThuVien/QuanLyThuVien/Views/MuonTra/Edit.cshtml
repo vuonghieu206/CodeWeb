@@ -1,0 +1,40 @@
+@model BorrowRecord
+@{
+    ViewData["Title"] = "Sửa phiếu mượn";
+}
+<div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Cập nhật phiếu mượn #@Model.Id</h3></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3">
+                <label class="form-label">Sách</label>
+                <input class="form-control" value="@Model.BookName" disabled />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Trạng thái</label>
+                <input class="form-control" value="@Model.Status" disabled />
+                <div class="form-text">Trạng thái được thay đổi bằng các nút Duyệt / Trả ở danh sách.</div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ReaderName" class="form-label"></label>
+                <input asp-for="ReaderName" class="form-control" />
+                <span asp-validation-for="ReaderName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ContactPhone" class="form-label"></label>
+                <input asp-for="ContactPhone" class="form-control" />
+                <span asp-validation-for="ContactPhone" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DueDate" class="form-label"></label>
+                <input asp-for="DueDate" type="date" class="form-control" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

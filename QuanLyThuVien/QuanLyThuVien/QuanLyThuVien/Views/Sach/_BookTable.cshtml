@@ -1,0 +1,55 @@
+@model PaginatedList<Book>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:70px">Ảnh</th>
+                <th>Tên sách</th>
+                <th>Tác giả</th>
+                <th>Thể loại</th>
+                <th class="text-center">Số lượng</th>
+                <th style="width:140px">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Items.Any())
+            {
+                <tr><td colspan="6" class="text-center py-3">Không có sách phù hợp.</td></tr>
+            }
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.CoverImage))
+                        {
+                            <img src="@item.CoverImage" alt="@item.Title" class="rounded" style="width:50px;height:65px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="bg-light border rounded d-flex align-items-center justify-content-center text-muted" style="width:50px;height:65px;"><i class="bi bi-book"></i></div>
+                        }
+                    </td>
+                    <td>@item.Title</td>
+                    <td>@item.Author</td>
+                    <td>@item.Category</td>
+                    <td class="text-center">
+                        <span class="badge @(item.Quantity > 0 ? "bg-success" : "bg-danger")">@item.Quantity</span>
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm" title="Sửa"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline js-delete-form"
+                              data-confirm="Bạn có chắc muốn xóa cuốn sách này?">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Xóa"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
+    <span>Tổng: @Model.TotalItems sách</span>
+    <span>Trang @Model.PageIndex / @Math.Max(1, Model.TotalPages)</span>
+</div>
+<partial name="_Pager" model="Model" />

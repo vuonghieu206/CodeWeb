@@ -1,0 +1,90 @@
+@model Book
+@{
+    ViewData["Title"] = "Cập nhật sách";
+}
+
+<div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Cập nhật thông tin sách</h3></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Author" class="form-label"></label>
+                            <input asp-for="Author" class="form-control" />
+                            <span asp-validation-for="Author" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Category" class="form-label"></label>
+                            <input asp-for="Category" class="form-control" />
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Quantity" class="form-label"></label>
+                        <input asp-for="Quantity" type="number" class="form-control" min="0" max="10000" />
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="8"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label">Ảnh bìa</label>
+                    @if (!string.IsNullOrEmpty(Model.CoverImage))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.CoverImage" alt="Ảnh bìa hiện tại" class="rounded border" style="max-height:140px;" />
+                        <div class="form-check mt-1">
+                            <input type="checkbox" name="removeCover" value="true" class="form-check-input" id="removeCover" />
+                            <label class="form-check-label" for="removeCover">Xóa ảnh bìa hiện tại</label>
+                        </div>
+                    </div>
+                }
+                    <input type="file" name="coverFile" id="coverFile" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp" />
+                    <span class="text-danger d-block">@Html.ValidationMessage("coverFile")</span>
+                    <div class="form-text">JPG, PNG, GIF, WEBP - tối đa 2MB.</div>
+                    <img id="coverPreview" class="img-fluid rounded border mt-2 d-none" alt="Xem trước" style="max-height:200px;" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <style>.ck-editor__editable_inline { min-height: 220px; }</style>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script>
+        // Tích hợp CKEditor vào textarea "Mô tả"
+        var editor;
+        ClassicEditor.create(document.querySelector('#Description'), {
+            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+        }).then(function (e) { editor = e; }).catch(function (err) { console.error(err); });
+
+        document.querySelector('#Description').closest('form').addEventListener('submit', function () {
+            if (editor) editor.updateSourceElement();
+        });
+
+        // Xem trước ảnh bìa trước khi upload
+        document.getElementById('coverFile').addEventListener('change', function () {
+            var f = this.files[0], img = document.getElementById('coverPreview');
+            if (!f) { img.classList.add('d-none'); return; }
+            if (f.size > 2 * 1024 * 1024) { alert('Ảnh tối đa 2MB'); this.value = ''; img.classList.add('d-none'); return; }
+            img.src = URL.createObjectURL(f);
+            img.classList.remove('d-none');
+        });
+    </script>
+}

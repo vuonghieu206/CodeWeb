@@ -1,0 +1,23 @@
+@model Penalty
+@{
+    ViewData["Title"] = "Sửa Tiền phạt";
+}
+<div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Cập nhật tiền phạt</h3></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3"><label class="form-label">Tên độc giả</label><input asp-for="ReaderName" class="form-control" /><span asp-validation-for="ReaderName" class="text-danger"></span></div>
+            <div class="mb-3"><label class="form-label">Lý do phạt</label><input asp-for="Reason" class="form-control" /><span asp-validation-for="Reason" class="text-danger"></span></div>
+            <div class="mb-3"><label class="form-label">Số tiền phạt (đ)</label><input asp-for="Amount" type="number" step="1000" min="0" class="form-control" /><span asp-validation-for="Amount" class="text-danger"></span></div>
+            <div class="mb-3 form-check">
+                <input asp-for="IsPaid" class="form-check-input" />
+                <label asp-for="IsPaid" class="form-check-label">Đã nộp tiền</label>
+            </div>
+            <button type="submit" class="btn btn-success">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

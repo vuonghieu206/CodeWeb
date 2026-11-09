@@ -1,0 +1,47 @@
+@model BorrowRecord
+@{
+    ViewData["Title"] = "Thêm phiếu mượn";
+}
+<div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Tạo phiếu mượn mới</h3></div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="BookId" class="form-label">Sách (chỉ hiện sách còn trong kho)</label>
+                <select asp-for="BookId" asp-items="(SelectList)ViewBag.Books" class="form-select">
+                    <option value="">-- Chọn sách --</option>
+                </select>
+                <span asp-validation-for="BookId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ReaderName" class="form-label"></label>
+                <input asp-for="ReaderName" class="form-control" list="readerList" autocomplete="off" />
+                <datalist id="readerList">
+                    @foreach (var n in (List<string>)ViewBag.Readers) { <option value="@n"></option> }
+                </datalist>
+                <span asp-validation-for="ReaderName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ContactPhone" class="form-label"></label>
+                <input asp-for="ContactPhone" class="form-control" />
+                <span asp-validation-for="ContactPhone" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="BorrowDate" class="form-label"></label>
+                    <input asp-for="BorrowDate" type="date" class="form-control" />
+                    <span asp-validation-for="BorrowDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DueDate" class="form-label"></label>
+                    <input asp-for="DueDate" type="date" class="form-control" />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Tạo phiếu</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,52 @@
+﻿@model IEnumerable<QuanLyThuVien.Models.Book>
+@{ Layout = "_MyLayout"; ViewData["Title"] = "Thể loại & Tìm kiếm"; }
+
+<div class="row mt-3">
+    <!-- Cột Thống kê -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white"><h4 class="mb-0">Thống kê Thể loại</h4></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light"><tr><th>Thể loại</th><th>Số lượng sách</th></tr></thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.TheLoaiStats)
+                        {
+                            <tr>
+                                <!-- Bấm vào tên thể loại để lọc luôn sách bên bảng tìm kiếm -->
+                                <td><a href="/TheLoai?searchString=@item.CategoryName" class="text-decoration-none fw-bold">@item.CategoryName</a></td>
+                                <td><span class="badge bg-primary rounded-pill">@item.Count</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cột Tìm kiếm -->
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header"><h4 class="mb-0">Tra cứu sách</h4></div>
+            <div class="card-body">
+                <form asp-action="Index" method="get" class="mb-3 d-flex">
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control me-2" placeholder="Nhập tên sách hoặc thể loại..." />
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Tìm kiếm</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary ms-2">Tất cả</a>
+                </form>
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark"><tr><th>Tên sách</th><th>Tác giả</th><th>Thể loại</th><th>Số lượng</th></tr></thead>
+                    <tbody>
+                        @if (Model != null && Model.Any()) {
+                            foreach (var item in Model) {
+                                <tr><td>@item.Title</td><td>@item.Author</td><td>@item.Category</td><td>@item.Quantity</td></tr>
+                            }
+                        } else {
+                            <tr><td colspan="4" class="text-center text-danger">Không tìm thấy kết quả phù hợp.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

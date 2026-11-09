@@ -1,0 +1,45 @@
+@model PaginatedList<Book>
+@{
+    ViewData["Title"] = "Quản lý sách";
+    var categories = (List<string>)ViewBag.Categories;
+    string sort = ViewBag.Sort as string ?? "";
+}
+
+<div class="card mt-3">
+    <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Danh sách đầu sách</h3>
+        <a asp-action="Create" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Thêm sách mới</a>
+    </div>
+    <div class="card-body">
+        <form id="filter-form" method="get" action="/Sach" class="row g-2 mb-3">
+            <div class="col-12 col-md-5">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên sách hoặc tác giả..." />
+            </div>
+            <div class="col-6 col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">-- Tất cả thể loại --</option>
+                    @foreach (var c in categories)
+                    {
+                        <option value="@c" selected="@(c == (string?)ViewBag.Category)">@c</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3">
+                <select name="sort" class="form-select">
+                    <option value="" selected="@(sort == "")">Tên A → Z</option>
+                    <option value="title_desc" selected="@(sort == "title_desc")">Tên Z → A</option>
+                    <option value="qty" selected="@(sort == "qty")">Số lượng tăng dần</option>
+                    <option value="qty_desc" selected="@(sort == "qty_desc")">Số lượng giảm dần</option>
+                    <option value="id_desc" selected="@(sort == "id_desc")">Mới thêm gần đây</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-1 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+
+        <div id="list-container" data-url="/Sach" data-page="@Model.PageIndex">
+            <partial name="_BookTable" model="Model" />
+        </div>
+    </div>
+</div>

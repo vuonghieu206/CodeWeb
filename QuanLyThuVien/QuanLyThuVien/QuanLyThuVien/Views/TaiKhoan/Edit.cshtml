@@ -1,0 +1,35 @@
+@model Account
+@{
+    ViewData["Title"] = "Sửa Tài khoản";
+}
+<div class="card mt-3">
+    <div class="card-header"><h3 class="card-title">Cập nhật tài khoản</h3></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="mb-3"><label class="form-label">Tên đăng nhập</label><input asp-for="Username" class="form-control" /><span asp-validation-for="Username" class="text-danger"></span></div>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu mới</label>
+                <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" value="" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+                <div class="form-text">Để trống nếu không muốn đổi mật khẩu.</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Vai trò</label>
+                <select asp-for="Role" class="form-select">
+                    <option value="Thủ thư">Thủ thư</option>
+                    <option value="Admin">Quản trị viên (Admin)</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-check">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label">Kích hoạt</label>
+            </div>
+            <button type="submit" class="btn btn-success">Cập nhật</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

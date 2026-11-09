@@ -1,0 +1,32 @@
+@model PaginatedList<Reader>
+<div class="table-responsive">
+    <table class="table table-striped table-hover mb-0">
+        <thead class="table-dark">
+            <tr><th>ID</th><th>Họ và Tên</th><th>Số điện thoại</th><th>Email</th><th>Địa chỉ</th><th style="width:130px">Thao tác</th></tr>
+        </thead>
+        <tbody>
+            @if (!Model.Items.Any())
+            {
+                <tr><td colspan="6" class="text-center py-3">Không có độc giả phù hợp.</td></tr>
+            }
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.FullName</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@item.Email</td>
+                    <td>@item.Address</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline js-delete-form" data-confirm="Xóa độc giả này?">
+                            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="small text-muted mt-2">Tổng: @Model.TotalItems độc giả</div>
+<partial name="_Pager" model="Model" />

@@ -1,0 +1,52 @@
+@model PaginatedList<Book>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+    @if (!Model.Items.Any())
+    {
+        <div class="col-12 text-center text-danger">@L["Không tìm thấy đầu sách nào phù hợp."]</div>
+    }
+    @foreach (var item in Model.Items)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <a href="/KhachHang/Details/@item.Id">
+                    @if (!string.IsNullOrEmpty(item.CoverImage))
+                    {
+                        <img src="@item.CoverImage" class="card-img-top book-cover" alt="@item.Title" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="book-cover-placeholder bg-white d-flex align-items-center justify-content-center border-bottom">
+                            <i class="bi bi-book text-primary" style="font-size: 3.5rem;"></i>
+                        </div>
+                    }
+                </a>
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold fs-6">
+                        <a href="/KhachHang/Details/@item.Id" class="text-decoration-none text-dark">@item.Title</a>
+                    </h5>
+                    <p class="card-text text-muted mb-1 small"><i class="bi bi-person"></i> @item.Author</p>
+                    @if (!string.IsNullOrEmpty(item.Category))
+                    {
+                        <p class="card-text text-muted small mb-0"><i class="bi bi-tags"></i> @item.Category</p>
+                    }
+                </div>
+                <div class="card-footer bg-white border-0 text-center pb-3">
+                    @if (item.Quantity > 0)
+                    {
+                        <span class="badge bg-success d-block mb-2">@string.Format(L["Còn {0} quyển"].Value, item.Quantity)</span>
+                        <button type="button" class="btn btn-outline-primary btn-sm js-add-cart" data-id="@item.Id">
+                            <i class="bi bi-basket"></i> @L["Thêm vào giỏ mượn"]
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">@L["Đã hết sách"]</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="small text-muted text-center mt-3">@string.Format(L["Tìm thấy {0} đầu sách"].Value, Model.TotalItems)</div>
+<partial name="_Pager" model="Model" />

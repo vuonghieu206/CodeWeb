@@ -1,0 +1,31 @@
+@model PaginatedList<BorrowRecord>
+@{
+    ViewData["Title"] = "Quản lý Mượn - Trả";
+    string status = ViewBag.Status as string ?? "";
+}
+<div class="card mt-3">
+    <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Danh sách phiếu mượn</h3>
+        <a asp-action="Create" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Thêm phiếu mượn</a>
+    </div>
+    <div class="card-body">
+        <form id="filter-form" method="get" action="/MuonTra" class="row g-2 mb-3">
+            <div class="col-12 col-md-5">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên sách hoặc người mượn..." />
+            </div>
+            <div class="col-9 col-md-3">
+                <select name="status" class="form-select">
+                    <option value="" selected="@(status == "")">-- Mọi trạng thái --</option>
+                    @foreach (var s in BorrowStatus.All)
+                    {
+                        <option value="@s" selected="@(status == s)">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 col-md-2 d-grid"><button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button></div>
+        </form>
+        <div id="list-container" data-url="/MuonTra" data-page="@Model.PageIndex">
+            <partial name="_Table" model="Model" />
+        </div>
+    </div>
+</div>

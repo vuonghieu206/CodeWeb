@@ -1,0 +1,218 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản lý thư viện</title>
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
+
+    <link rel="stylesheet"
+          href="~/lib/adminlte/css/adminlte.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+</head>
+
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+
+        <!-- Thanh điều hướng phía trên -->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           data-lte-toggle="sidebar"
+                           href="#"
+                           role="button">
+                            <i class="bi bi-list"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            <i class="bi bi-person-circle"></i>
+                            @User.Identity?.Name
+                            <span class="badge bg-secondary">@(User.IsInRole(AppRoles.Admin) ? "Admin" : "Thủ thư")</span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="app-sidebar bg-dark shadow"
+               data-bs-theme="dark">
+
+            <div class="sidebar-brand">
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="brand-link">
+                    <i class="bi bi-book-half me-2"></i>
+                    <span class="brand-text fw-light">
+                        Quản lý thư viện
+                    </span>
+                </a>
+            </div>
+
+            <div class="sidebar-wrapper">
+                <nav class="mt-2">
+                    <ul class="nav sidebar-menu flex-column"
+                        data-lte-toggle="treeview"
+                        role="menu">
+
+                        <li class="nav-item">
+                            <a asp-controller="Home"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-speedometer2"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-header">QUẢN LÝ THƯ VIỆN</li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Sach"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-book"></i>
+                                <p>Quản lý sách</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="TheLoai"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-search"></i>
+                                <p>Tra cứu - tìm kiếm</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="DocGia"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-people"></i>
+                                <p>Quản lý độc giả</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="MuonTra"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-arrow-left-right"></i>
+                                <p>Quản lý mượn trả</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Phat"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-cash-coin"></i>
+                                <p>Quản lý tiền phạt</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="BaoCao"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-bar-chart-line"></i>
+                                <p>Báo cáo – thống kê</p>
+                            </a>
+                        </li>
+
+                        @if (User.IsInRole(AppRoles.Admin))
+                        {
+                        <li class="nav-header">HỆ THỐNG</li>
+
+                        <li class="nav-item">
+                            <a asp-controller="TaiKhoan"
+                               asp-action="Index"
+                               class="nav-link">
+                                <i class="nav-icon bi bi-person-gear"></i>
+                                <p>Tài khoản</p>
+                            </a>
+                        </li>
+                        }
+                        <hr class="text-white" />
+                        <li class="nav-item mt-2">
+                            <a href="/KhachHang" class="nav-link text-warning fw-bold" target="_blank" rel="noopener">
+                                <i class="bi bi-box-arrow-up-right"></i> Xem giao diện Khách
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Nội dung từng trang -->
+        <main class="app-main">
+            <div class="app-content-header">
+                <div class="container-fluid">
+                    <h3 class="mb-0">@ViewData["Title"]</h3>
+                </div>
+            </div>
+
+            <div class="app-content">
+                <div class="container-fluid">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @RenderBody()
+                </div>
+            </div>
+        </main>
+
+        <!-- Chân trang -->
+        <footer class="app-footer">
+            <strong>Hệ thống quản lý thư viện</strong>
+            <span class="float-end">ASP.NET Core MVC</span>
+        </footer>
+
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+    <script src="~/lib/adminlte/js/adminlte.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/list-ajax.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

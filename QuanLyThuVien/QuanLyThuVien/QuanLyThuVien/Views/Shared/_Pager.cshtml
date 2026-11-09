@@ -1,0 +1,43 @@
+@model IPagedList
+@{
+    string Href(int p)
+    {
+        var parts = Context.Request.Query
+            .Where(k => k.Key != "page")
+            .Select(k => $"{Uri.EscapeDataString(k.Key)}={Uri.EscapeDataString(k.Value.ToString())}")
+            .ToList();
+        parts.Add("page=" + p);
+        return "?" + string.Join("&", parts);
+    }
+    var start = Math.Max(1, Model.PageIndex - 2);
+    var end = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+}
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Phân trang">
+        <ul class="pagination pagination-sm justify-content-center flex-wrap mb-0 mt-3">
+            <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+                <a class="page-link" href="@Href(Model.PageIndex - 1)" data-page="@(Model.PageIndex - 1)">&laquo;</a>
+            </li>
+            @if (start > 1)
+            {
+                <li class="page-item"><a class="page-link" href="@Href(1)" data-page="1">1</a></li>
+                @if (start > 2) { <li class="page-item disabled"><span class="page-link">…</span></li> }
+            }
+            @for (var i = start; i <= end; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" href="@Href(i)" data-page="@i">@i</a>
+                </li>
+            }
+            @if (end < Model.TotalPages)
+            {
+                @if (end < Model.TotalPages - 1) { <li class="page-item disabled"><span class="page-link">…</span></li> }
+                <li class="page-item"><a class="page-link" href="@Href(Model.TotalPages)" data-page="@Model.TotalPages">@Model.TotalPages</a></li>
+            }
+            <li class="page-item @(Model.HasNext ? "" : "disabled")">
+                <a class="page-link" href="@Href(Model.PageIndex + 1)" data-page="@(Model.PageIndex + 1)">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+}

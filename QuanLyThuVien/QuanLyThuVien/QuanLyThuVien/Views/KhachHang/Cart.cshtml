@@ -1,0 +1,60 @@
+@model IEnumerable<Book>
+@{
+    Layout = "_LayoutKhach";
+    ViewData["Title"] = L["Giỏ mượn"].Value;
+    var form = ViewBag.Form as QuanLyThuVien.Controllers.BorrowRequestViewModel;
+}
+
+<h3 class="mb-3"><i class="bi bi-basket"></i> @L["Giỏ mượn sách"]</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">@L["Giỏ mượn đang trống"]</div>
+    <a href="/KhachHang" class="btn btn-primary">@L["Tiếp tục tra cứu sách"]</a>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0">
+                <ul class="list-group list-group-flush">
+                    @foreach (var b in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="/KhachHang/Details/@b.Id" class="fw-bold text-decoration-none">@b.Title</a>
+                                <div class="small text-muted">@b.Author</div>
+                            </div>
+                            <form asp-action="RemoveFromCart" asp-route-id="@b.Id" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" title="@L["Xóa khỏi giỏ"]"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">@L["Thông tin người mượn"]</h5>
+                    <form asp-controller="KhachHang" asp-action="Checkout" method="post">
+                        >
+                        <div class="mb-3">
+                            <label class="form-label" for="FullName">@L["Họ và tên"]</label>
+                            <input id="FullName" name="FullName" class="form-control" maxlength="100" required value="@form?.FullName" />
+                            @Html.ValidationMessage("FullName", new { @class = "text-danger small" })
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="Phone">@L["Số điện thoại"]</label>
+                            <input id="Phone" name="Phone" class="form-control" inputmode="tel" required
+                                   pattern="^(\+84|0)\d{9,10}$" placeholder="0912345678" value="@form?.Phone" />
+                            @Html.ValidationMessage("Phone", new { @class = "text-danger small" })
+                        </div>
+                        <p class="small text-muted">@L["Yêu cầu sẽ được thủ thư xem xét và liên hệ lại. Thời hạn mượn mặc định 14 ngày."]</p>
+                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-send"></i> @L["Gửi yêu cầu mượn"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

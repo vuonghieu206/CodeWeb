@@ -1,0 +1,86 @@
+@model Book
+@inject Ganss.Xss.IHtmlSanitizer Sanitizer
+@{
+    Layout = "_LayoutKhach";
+    ViewData["Title"] = Model.Title;
+    var recent = (IEnumerable<Book?>)ViewBag.Recent;
+    bool inCart = (bool)ViewBag.InCart;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/KhachHang">@L["Trang chủ"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.CoverImage))
+                {
+                    <img src="@Model.CoverImage" alt="@Model.Title" class="img-fluid rounded shadow-sm" style="max-height:420px;" />
+                }
+                else
+                {
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:300px;">
+                        <i class="bi bi-book text-primary" style="font-size:6rem;"></i>
+                    </div>
+                }
+            </div>
+            <div class="col-md-8">
+                <h2 class="fw-bold">@Model.Title</h2>
+                <p class="mb-1"><i class="bi bi-person"></i> <strong>@L["Tác giả"]:</strong> @Model.Author</p>
+                @if (!string.IsNullOrEmpty(Model.Category))
+                {
+                    <p class="mb-1"><i class="bi bi-tags"></i> <strong>@L["Thể loại"]:</strong> @Model.Category</p>
+                }
+                <p class="mb-3">
+                    @if (Model.Quantity > 0)
+                    {
+                        <span class="badge bg-success">@string.Format(L["Còn {0} quyển"].Value, Model.Quantity)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">@L["Đã hết sách"]</span>
+                    }
+                </p>
+
+                @if (Model.Quantity > 0)
+                {
+                    <button type="button" class="btn btn-primary js-add-cart" data-id="@Model.Id" disabled="@inCart">
+                        <i class="bi bi-basket"></i> @(inCart ? L["Sách đã có trong giỏ"] : L["Thêm vào giỏ mượn"])
+                    </button>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <hr />
+                    <h5>@L["Giới thiệu"]</h5>
+                    @* Nội dung HTML từ editor: đã sanitize khi lưu và sanitize lại khi hiển thị (defense in depth) *@
+                    <div>@Html.Raw(Sanitizer.Sanitize(Model.Description))</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (recent.Any())
+{
+    <h5 class="mt-4">@L["Sách bạn đã xem gần đây"]</h5>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        @foreach (var b in recent)
+        {
+            <div class="col">
+                <a href="/KhachHang/Details/@b?.Id" class="card h-100 text-decoration-none text-dark shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <i class="bi bi-book text-primary fs-3"></i>
+                        <div class="fw-bold small mt-2">@b.Title</div>
+                        <div class="text-muted small">@b.Author</div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}

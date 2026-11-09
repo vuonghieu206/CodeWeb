@@ -1,0 +1,100 @@
+@model QuanLyThuVien.Controllers.BaoCaoViewModel
+@{
+    Layout = "_MyLayout";
+    ViewData["Title"] = "Báo cáo - Thống kê";
+}
+
+<div class="row mt-3 g-3">
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-3 fw-bold">@Model.TotalBooks</div><div class="small text-muted">Đầu sách</div></div></div></div>
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-3 fw-bold">@Model.TotalCopies</div><div class="small text-muted">Quyển trong kho</div></div></div></div>
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-3 fw-bold">@Model.TotalReaders</div><div class="small text-muted">Độc giả</div></div></div></div>
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-3 fw-bold text-warning">@Model.Borrowing</div><div class="small text-muted">Đang mượn</div></div></div></div>
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-3 fw-bold text-danger">@Model.Overdue</div><div class="small text-muted">Quá hạn</div></div></div></div>
+    <div class="col-6 col-lg-2"><div class="card text-center h-100"><div class="card-body py-3"><div class="fs-5 fw-bold text-danger">@Model.UnpaidFines.ToString("N0") đ</div><div class="small text-muted">Phạt chưa thu</div></div></div></div>
+</div>
+
+<div class="row mt-3 g-3">
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header"><h5 class="mb-0">Sách theo thể loại (số quyển)</h5></div>
+            <div class="card-body">
+                @if (Model.CategoryValues.Sum() == 0) { <p class="text-muted mb-0">Chưa có dữ liệu.</p> }
+                else { <div style="position:relative;height:280px;"><canvas id="chartCategory"></canvas></div> }
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header"><h5 class="mb-0">Phiếu mượn theo trạng thái</h5></div>
+            <div class="card-body">
+                @if (Model.StatusValues.Sum() == 0) { <p class="text-muted mb-0">Chưa có dữ liệu.</p> }
+                else { <div style="position:relative;height:280px;"><canvas id="chartStatus"></canvas></div> }
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header"><h5 class="mb-0">Lượt mượn 6 tháng gần nhất</h5></div>
+            <div class="card-body"><div style="position:relative;height:280px;"><canvas id="chartMonth"></canvas></div></div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header"><h5 class="mb-0">Top 5 sách mượn nhiều</h5></div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Sách</th><th class="text-end">Lượt</th></tr></thead>
+                    <tbody>
+                        @if (!Model.TopBooks.Any())
+                        {
+                            <tr><td colspan="2" class="text-center text-muted py-3">Chưa có dữ liệu.</td></tr>
+                        }
+                        @foreach (var b in Model.TopBooks)
+                        {
+                            <tr><td>@b.Title</td><td class="text-end"><span class="badge bg-primary rounded-pill">@b.Count</span></td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Dữ liệu được serialize an toàn (đã escape ký tự đặc biệt) từ server
+        var data = {
+            catLabels: @Json.Serialize(Model.CategoryLabels), catValues: @Json.Serialize(Model.CategoryValues),
+            stLabels: @Json.Serialize(Model.StatusLabels), stValues: @Json.Serialize(Model.StatusValues),
+            moLabels: @Json.Serialize(Model.MonthLabels), moValues: @Json.Serialize(Model.MonthValues)
+        };
+        var palette = ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997', '#6c757d'];
+        Chart.defaults.color = getComputedStyle(document.body).color;   // đúng màu chữ ở cả giao diện sáng/tối
+        Chart.defaults.maintainAspectRatio = false;
+
+        function el(id) { return document.getElementById(id); }
+
+        if (el('chartCategory')) {
+            new Chart(el('chartCategory'), {
+                type: 'doughnut',
+                data: { labels: data.catLabels, datasets: [{ data: data.catValues, backgroundColor: palette }] },
+                options: { plugins: { legend: { position: 'right' } } }
+            });
+        }
+        if (el('chartStatus')) {
+            new Chart(el('chartStatus'), {
+                type: 'bar',
+                data: { labels: data.stLabels, datasets: [{ label: 'Số phiếu', data: data.stValues,
+                        backgroundColor: ['#0dcaf0', '#ffc107', '#198754', '#6c757d'] }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+            });
+        }
+        new Chart(el('chartMonth'), {
+            type: 'line',
+            data: { labels: data.moLabels, datasets: [{ label: 'Lượt mượn', data: data.moValues,
+                    borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,.15)', fill: true, tension: .3 }] },
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+        });
+    </script>
+}

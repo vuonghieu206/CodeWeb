@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Còn nhiều nhất" xml:space="preserve"><value>Most available</value></data>
+  <data name="Còn {0} quyển" xml:space="preserve"><value>{0} cop(ies) available</value></data>
+  <data name="Giỏ mượn" xml:space="preserve"><value>Borrow basket</value></data>
+  <data name="Giỏ mượn sách" xml:space="preserve"><value>Your borrow basket</value></data>
+  <data name="Giỏ mượn đang trống" xml:space="preserve"><value>Your borrow basket is empty</value></data>
+  <data name="Giới thiệu" xml:space="preserve"><value>Description</value></data>
+  <data name="Gửi yêu cầu mượn" xml:space="preserve"><value>Send borrow request</value></data>
+  <data name="Họ tên tối đa 100 ký tự" xml:space="preserve"><value>Full name must be at most 100 characters</value></data>
+  <data name="Họ và tên" xml:space="preserve"><value>Full name</value></data>
+  <data name="Khám phá kho sách" xml:space="preserve"><value>Explore our book collection</value></data>
+  <data name="Không tìm thấy sách" xml:space="preserve"><value>Book not found</value></data>
+  <data name="Không tìm thấy đầu sách nào phù hợp." xml:space="preserve"><value>No matching books found.</value></data>
+  <data name="Mỗi lần chỉ mượn tối đa {0} cuốn" xml:space="preserve"><value>You can borrow at most {0} books at a time</value></data>
+  <data name="Mới nhất" xml:space="preserve"><value>Newest</value></data>
+  <data name="Nhập tên sách hoặc tác giả..." xml:space="preserve"><value>Enter a title or author...</value></data>
+  <data name="Sách bạn đã xem gần đây" xml:space="preserve"><value>Recently viewed books</value></data>
+  <data name="Sách này đã hết" xml:space="preserve"><value>This book is out of stock</value></data>
+  <data name="Sách đã có trong giỏ" xml:space="preserve"><value>Already in your basket</value></data>
+  <data name="Số điện thoại" xml:space="preserve"><value>Phone number</value></data>
+  <data name="Số điện thoại không hợp lệ (VD: 0912345678)" xml:space="preserve"><value>Invalid phone number (e.g. 0912345678)</value></data>
+  <data name="Thêm vào giỏ mượn" xml:space="preserve"><value>Add to basket</value></data>
+  <data name="Thông tin người mượn" xml:space="preserve"><value>Borrower information</value></data>
+  <data name="Thư Viện Trực Tuyến" xml:space="preserve"><value>Online Library</value></data>
+  <data name="Thể loại" xml:space="preserve"><value>Category</value></data>
+  <data name="Tiếp tục tra cứu sách" xml:space="preserve"><value>Continue browsing books</value></data>
+  <data name="Tra cứu sách" xml:space="preserve"><value>Browse books</value></data>
+  <data name="Trang chủ" xml:space="preserve"><value>Home</value></data>
+  <data name="Tác giả" xml:space="preserve"><value>Author</value></data>
+  <data name="Tên A → Z" xml:space="preserve"><value>Title A → Z</value></data>
+  <data name="Tên Z → A" xml:space="preserve"><value>Title Z → A</value></data>
+  <data name="Tìm kiếm" xml:space="preserve"><value>Search</value></data>
+  <data name="Tìm kiếm và tra cứu các đầu sách tại thư viện" xml:space="preserve"><value>Search and browse the books in our library</value></data>
+  <data name="Tìm thấy {0} đầu sách" xml:space="preserve"><value>{0} book(s) found</value></data>
+  <data name="Tất cả thể loại" xml:space="preserve"><value>All categories</value></data>
+  <data name="Vui lòng nhập họ tên" xml:space="preserve"><value>Please enter your full name</value></data>
+  <data name="Vui lòng nhập số điện thoại" xml:space="preserve"><value>Please enter your phone number</value></data>
+  <data name="Vào trang quản trị" xml:space="preserve"><value>Go to admin area</value></data>
+  <data name="Xóa khỏi giỏ" xml:space="preserve"><value>Remove from basket</value></data>
+  <data name="Yêu cầu sẽ được thủ thư xem xét và liên hệ lại. Thời hạn mượn mặc định 14 ngày." xml:space="preserve"><value>Your request will be reviewed by a librarian who will contact you. The default loan period is 14 days.</value></data>
+  <data name="Đã gửi yêu cầu mượn sách. Thủ thư sẽ liên hệ với bạn qua số điện thoại." xml:space="preserve"><value>Your borrow request has been sent. A librarian will contact you by phone.</value></data>
+  <data name="Đã hết sách" xml:space="preserve"><value>Out of stock</value></data>
+  <data name="Đã thêm vào giỏ mượn" xml:space="preserve"><value>Added to your basket</value></data>
+  <data name="Đăng nhập Quản trị" xml:space="preserve"><value>Admin login</value></data>
+  <data name="Tra cứu yêu cầu mượn" xml:space="preserve"><value>Check borrow requests</value></data>
+  <data name="Nhập họ tên và số điện thoại đã dùng khi gửi yêu cầu để xem trạng thái." xml:space="preserve"><value>Enter the full name and phone number you used when sending the request to see its status.</value></data>
+  <data name="Tra cứu" xml:space="preserve"><value>Look up</value></data>
+  <data name="Không tìm thấy yêu cầu nào khớp với thông tin đã nhập." xml:space="preserve"><value>No request matches the information you entered.</value></data>
+  <data name="Sách" xml:space="preserve"><value>Book</value></data>
+  <data name="Ngày mượn" xml:space="preserve"><value>Borrow date</value></data>
+  <data name="Hạn trả" xml:space="preserve"><value>Due date</value></data>
+  <data name="Ngày trả" xml:space="preserve"><value>Return date</value></data>
+  <data name="Trạng thái" xml:space="preserve"><value>Status</value></data>
+  <data name="Chưa trả" xml:space="preserve"><value>Not returned</value></data>
+  <data name="Chờ duyệt" xml:space="preserve"><value>Pending approval</value></data>
+  <data name="Đang mượn" xml:space="preserve"><value>Borrowing</value></data>
+  <data name="Đã trả" xml:space="preserve"><value>Returned</value></data>
+  <data name="Từ chối" xml:space="preserve"><value>Rejected</value></data>
+</root>
