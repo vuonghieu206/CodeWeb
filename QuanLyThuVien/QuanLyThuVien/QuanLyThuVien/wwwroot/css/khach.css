@@ -71,3 +71,28 @@ body { background: #f4f6fb; }
 
 footer.site-footer { background: #1e3c72; color: #cfd9f2; }
 footer.site-footer a { color: #fff; text-decoration: none; }
+
+
+/* Fix modal đăng ký: giữ nút Đăng ký luôn nằm ở chân hộp thoại,
+   chỉ cuộn phần nội dung khi form dài hơn chiều cao màn hình. */
+#registerModal .modal-dialog {
+    height: calc(100% - var(--bs-modal-margin) * 2);
+}
+#registerModal .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - var(--bs-modal-margin) * 2);
+}
+#registerModal form {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+#registerModal .modal-body {
+    min-height: 0;
+    overflow-y: auto;
+}
+#registerModal .modal-footer {
+    flex: 0 0 auto;
+}

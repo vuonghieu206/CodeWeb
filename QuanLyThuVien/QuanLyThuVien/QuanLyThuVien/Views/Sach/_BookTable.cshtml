@@ -49,7 +49,19 @@
     </table>
 </div>
 <div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
-    <span>Tổng: @Model.TotalItems sách</span>
-    <span>Trang @Model.PageIndex / @Math.Max(1, Model.TotalPages)</span>
+    <span>
+        Tổng: @Model.TotalItems sách
+        @if (ViewBag.DisablePager == true)
+        {
+            <span class="ms-1">· Đang hiển thị toàn bộ kết quả tìm kiếm</span>
+        }
+    </span>
+    @if (ViewBag.DisablePager != true)
+    {
+        <span>Trang @Model.PageIndex / @Math.Max(1, Model.TotalPages)</span>
+    }
 </div>
-<partial name="_Pager" model="Model" />
+@if (ViewBag.DisablePager != true)
+{
+    <partial name="_Pager" model="Model" />
+}

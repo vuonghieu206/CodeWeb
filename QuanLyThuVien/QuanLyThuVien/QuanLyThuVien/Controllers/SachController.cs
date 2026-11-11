@@ -39,7 +39,21 @@ namespace QuanLyThuVien.Controllers
                 _ => q.OrderBy(b => b.Title)
             };
 
-            var model = await PaginatedList<Book>.CreateAsync(q, page, PageSize);
+            PaginatedList<Book> model;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                // Khi có từ khóa tìm kiếm, hiển thị toàn bộ kết quả, không phân trang.
+                var allResults = await q.ToListAsync();
+                model = new PaginatedList<Book>(allResults, allResults.Count, 1, Math.Max(allResults.Count, 1));
+                ViewBag.DisablePager = true;
+            }
+            else
+            {
+                // Danh sách, lọc theo thể loại và sắp xếp vẫn phân trang.
+                model = await PaginatedList<Book>.CreateAsync(q, page, PageSize);
+                ViewBag.DisablePager = false;
+            }
+
             ViewBag.Search = search;
             ViewBag.Category = category;
             ViewBag.Sort = sort;
