@@ -5,7 +5,7 @@ using QuanLyThuVien.Models;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : StaffController
     {
         private readonly LibraryDbContext _context;
 

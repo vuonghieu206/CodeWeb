@@ -17,10 +17,18 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Vai trò</label>
-                <select asp-for="Role" class="form-select">
-                    <option value="Thủ thư">Thủ thư</option>
-                    <option value="Admin">Quản trị viên (Admin)</option>
-                </select>
+                @if (Model.Role == "Độc giả")
+                {
+                    <input type="hidden" asp-for="Role" />
+                    <input class="form-control" value="Độc giả (tài khoản khách tự đăng ký)" disabled />
+                }
+                else
+                {
+                    <select asp-for="Role" class="form-select">
+                        <option value="Thủ thư">Thủ thư</option>
+                        <option value="Admin">Quản trị viên (Admin)</option>
+                    </select>
+                }
                 <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="mb-3 form-check">

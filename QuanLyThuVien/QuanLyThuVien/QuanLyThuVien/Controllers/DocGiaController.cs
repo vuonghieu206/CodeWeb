@@ -5,7 +5,7 @@ using QuanLyThuVien.Models;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class DocGiaController : Controller
+    public class DocGiaController : StaffController
     {
         private const int PageSize = 10;
         private readonly LibraryDbContext _context;

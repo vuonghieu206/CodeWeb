@@ -11,7 +11,7 @@ namespace QuanLyThuVien.Controllers.Api
     {
         [Required, StringLength(200)] public string Title { get; set; } = string.Empty;
         [Required, StringLength(150)] public string Author { get; set; } = string.Empty;
-        [StringLength(100)] public string? Category { get; set; }
+        [Required, StringLength(100)] public string Category { get; set; } = string.Empty;
         [Range(0, 10000)] public int Quantity { get; set; }
         public string? Description { get; set; }
     }
@@ -75,6 +75,8 @@ namespace QuanLyThuVien.Controllers.Api
         [HttpPost, Authorize(Roles = AppRoles.Staff)]
         public async Task<IActionResult> Create([FromBody] BookInput input)
         {
+            if (!await _context.Categories.AnyAsync(c => c.Name == input.Category))
+                return BadRequest(new { message = "Danh mục không tồn tại, hãy thêm ở mục Danh mục trước" });
             var book = new Book
             {
                 Title = input.Title, Author = input.Author, Category = input.Category, Quantity = input.Quantity,
@@ -90,6 +92,8 @@ namespace QuanLyThuVien.Controllers.Api
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null) return NotFound();
+            if (!await _context.Categories.AnyAsync(c => c.Name == input.Category))
+                return BadRequest(new { message = "Danh mục không tồn tại, hãy thêm ở mục Danh mục trước" });
             book.Title = input.Title;
             book.Author = input.Author;
             book.Category = input.Category;

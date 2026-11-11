@@ -13,7 +13,7 @@
             {
                 <tr>
                     <td>@item.Id</td>
-                    <td>@item.FullName</td>
+                    <td>@item.FullName @if (item.AccountId != null) { <span class="badge bg-info text-dark" title="Đăng ký tài khoản trên website">Có tài khoản</span> }</td>
                     <td>@item.PhoneNumber</td>
                     <td>@item.Email</td>
                     <td>@item.Address</td>

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLyThuVien.Models
 {
@@ -11,5 +11,22 @@ namespace QuanLyThuVien.Models
         public DbSet<Reader> Readers { get; set; }
         public DbSet<Penalty> Penalties { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Tên danh mục không được trùng
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
+
+            // Xóa sách thì xóa luôn đánh giá của sách đó
+            modelBuilder.Entity<Review>()
+                .HasOne<Book>()
+                .WithMany()
+                .HasForeignKey(r => r.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

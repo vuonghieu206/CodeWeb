@@ -1,0 +1,51 @@
+@model PaginatedList<Category>
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+    var counts = (Dictionary<string, int>)ViewBag.Counts;
+}
+<div class="card mt-3">
+    <div class="card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+        <h3 class="card-title mb-0">Danh mục (thể loại sách)</h3>
+        <a asp-action="Create" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Thêm danh mục</a>
+    </div>
+    <div class="card-body">
+        <form method="get" action="/DanhMuc" class="row g-2 mb-3">
+            <div class="col-9 col-md-6">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm danh mục..." />
+            </div>
+            <div class="col-3 col-md-2 d-grid"><button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button></div>
+        </form>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr><th>ID</th><th>Tên danh mục</th><th>Mô tả</th><th class="text-center">Số đầu sách</th><th style="width:130px">Thao tác</th></tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Items.Any())
+                    {
+                        <tr><td colspan="5" class="text-center py-3">Chưa có danh mục nào.</td></tr>
+                    }
+                    @foreach (var item in Model.Items)
+                    {
+                        var n = counts.TryGetValue(item.Name, out var c) ? c : 0;
+                        <tr>
+                            <td>@item.Id</td>
+                            <td class="fw-bold">@item.Name</td>
+                            <td>@item.Description</td>
+                            <td class="text-center"><span class="badge @(n > 0 ? "bg-primary" : "bg-secondary")">@n</span></td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Xóa danh mục này?');">
+                                    <button type="submit" class="btn btn-danger btn-sm" title="@(n > 0 ? "Đang có sách, không thể xóa" : "Xóa")"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="small text-muted mt-2">Tổng: @Model.TotalItems danh mục. Danh mục đang có sách sẽ không xóa được.</div>
+        <partial name="_Pager" model="Model" />
+    </div>
+</div>

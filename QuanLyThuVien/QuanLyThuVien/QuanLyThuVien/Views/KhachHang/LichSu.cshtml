@@ -1,0 +1,70 @@
+@model PaginatedList<BorrowRecord>
+@{
+    Layout = "_LayoutKhach";
+    ViewData["Title"] = "Lịch sử mượn";
+    string status = ViewBag.Status as string ?? "";
+    string Badge(string s) => s switch
+    {
+        BorrowStatus.Pending => "bg-info text-dark",
+        BorrowStatus.Borrowing => "bg-warning text-dark",
+        BorrowStatus.Returned => "bg-success",
+        BorrowStatus.Rejected => "bg-secondary",
+        _ => "bg-light text-dark"
+    };
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <h3 class="mb-0"><i class="bi bi-clock-history"></i> Lịch sử mượn của tôi</h3>
+    <form method="get" action="/KhachHang/LichSu" class="d-flex gap-2">
+        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="" selected="@(status == "")">Tất cả trạng thái</option>
+            @foreach (var s in BorrowStatus.All)
+            {
+                <option value="@s" selected="@(status == s)">@s</option>
+            }
+        </select>
+    </form>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Sách</th><th>Ngày mượn</th><th>Hạn trả</th><th>Ngày trả</th><th>Trạng thái</th><th></th></tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">Bạn chưa có lượt mượn nào. <a href="/KhachHang">Chọn sách ngay</a>.</td></tr>
+                }
+                @foreach (var r in Model.Items)
+                {
+                    var overdue = r.Status == BorrowStatus.Borrowing && r.DueDate.HasValue && r.DueDate.Value.Date < DateTime.Now.Date;
+                    <tr class="@(overdue ? "table-danger" : "")">
+                        <td>
+                            @if (r.BookId != null) { <a href="/KhachHang/Details/@r.BookId" class="text-decoration-none">@r.BookName</a> }
+                            else { @r.BookName }
+                        </td>
+                        <td>@r.BorrowDate.ToString("dd/MM/yyyy")</td>
+                        <td>@(r.DueDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@(r.ReturnDate?.ToString("dd/MM/yyyy") ?? "Chưa trả")</td>
+                        <td>
+                            <span class="badge @Badge(r.Status)">@r.Status</span>
+                            @if (overdue) { <span class="badge bg-danger">Quá hạn</span> }
+                        </td>
+                        <td class="text-end">
+                            @if (r.Status == BorrowStatus.Pending)
+                            {
+                                <form asp-action="HuyYeuCau" asp-route-id="@r.Id" method="post" onsubmit="return confirm('Hủy yêu cầu mượn này?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Hủy yêu cầu</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="small text-muted mt-2">Tổng: @Model.TotalItems lượt mượn</div>
+<partial name="_Pager" model="Model" />

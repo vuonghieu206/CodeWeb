@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuanLyThuVien.Helpers;
 using QuanLyThuVien.Models;
 using QuanLyThuVien.Services;
 
@@ -9,8 +10,9 @@ namespace QuanLyThuVien.Controllers
 {
     // Chỉ Admin được quản lý tài khoản (Thủ thư bị chặn -> 403)
     [Authorize(Roles = AppRoles.Admin)]
-    public class TaiKhoanController : Controller
+    public class TaiKhoanController : StaffController
     {
+        private const int PageSize = 10;
         private readonly LibraryDbContext _context;
         private readonly AccountService _accounts;
 
@@ -21,25 +23,29 @@ namespace QuanLyThuVien.Controllers
         }
 
         private int CurrentId => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : 0;
-        private static bool ValidRole(string? r) => r == AppRoles.Admin || r == AppRoles.ThuThu;
+        private static bool IsStaffRole(string? r) => r == AppRoles.Admin || r == AppRoles.ThuThu;
 
-        private static string? CheckPassword(string? pw)
+        public async Task<IActionResult> Index(string? search, string? role, int page = 1)
         {
-            if (string.IsNullOrEmpty(pw) || pw.Length < 8) return "Mật khẩu tối thiểu 8 ký tự";
-            if (!pw.Any(char.IsLetter) || !pw.Any(char.IsDigit)) return "Mật khẩu phải có cả chữ và số";
-            return null;
-        }
+            var q = _context.Accounts.AsNoTracking().AsQueryable();
+            if (!string.IsNullOrWhiteSpace(search)) q = q.Where(a => a.Username.Contains(search));
+            if (!string.IsNullOrWhiteSpace(role)) q = q.Where(a => a.Role == role);
+            q = q.OrderBy(a => a.Role).ThenBy(a => a.Username);
 
-        public async Task<IActionResult> Index() =>
-            View(await _context.Accounts.AsNoTracking().OrderBy(a => a.Username).ToListAsync());
+            var model = await PaginatedList<Account>.CreateAsync(q, page, PageSize);
+            ViewBag.Search = search;
+            ViewBag.Role = role;
+            return View(model);
+        }
 
         [HttpGet] public IActionResult Create() => View(new Account());
 
+        // Admin chỉ tạo tài khoản nhân viên; tài khoản độc giả do khách tự đăng ký trên website
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Account model)
         {
-            if (!ValidRole(model.Role)) ModelState.AddModelError(nameof(Account.Role), "Vai trò không hợp lệ");
-            var pwErr = CheckPassword(model.Password);
+            if (!IsStaffRole(model.Role)) ModelState.AddModelError(nameof(Account.Role), "Vai trò không hợp lệ");
+            var pwErr = AccountService.CheckStrength(model.Password);
             if (pwErr != null) ModelState.AddModelError(nameof(Account.Password), pwErr);
             if (await _context.Accounts.AnyAsync(a => a.Username == model.Username))
                 ModelState.AddModelError(nameof(Account.Username), "Tên đăng nhập đã tồn tại");
@@ -69,17 +75,20 @@ namespace QuanLyThuVien.Controllers
             var acc = await _context.Accounts.FindAsync(id);
             if (acc == null) return NotFound();
 
+            var isReader = acc.Role == AppRoles.DocGia;
+            if (isReader) model.Role = AppRoles.DocGia;   // không đổi vai trò tài khoản độc giả
+
             ModelState.Remove(nameof(Account.Password)); // để trống = giữ mật khẩu cũ
-            if (!ValidRole(model.Role)) ModelState.AddModelError(nameof(Account.Role), "Vai trò không hợp lệ");
+            if (!isReader && !IsStaffRole(model.Role)) ModelState.AddModelError(nameof(Account.Role), "Vai trò không hợp lệ");
             if (!string.IsNullOrEmpty(model.Password))
             {
-                var pwErr = CheckPassword(model.Password);
+                var pwErr = AccountService.CheckStrength(model.Password);
                 if (pwErr != null) ModelState.AddModelError(nameof(Account.Password), pwErr);
             }
             if (await _context.Accounts.AnyAsync(a => a.Username == model.Username && a.Id != id))
                 ModelState.AddModelError(nameof(Account.Username), "Tên đăng nhập đã tồn tại");
 
-            // Không cho tự hạ quyền / tự khóa chính mình, và luôn còn ít nhất 1 admin hoạt động
+            // Không cho tự hạ quyền / tự khóa chính mình
             if (id == CurrentId && (!model.IsActive || model.Role != AppRoles.Admin))
                 ModelState.AddModelError(string.Empty, "Bạn không thể tự khóa hoặc hạ quyền tài khoản đang đăng nhập");
 
@@ -105,6 +114,10 @@ namespace QuanLyThuVien.Controllers
             var acc = await _context.Accounts.FindAsync(id);
             if (acc != null)
             {
+                // Hồ sơ độc giả (và lịch sử mượn) được giữ lại, chỉ gỡ liên kết với tài khoản đã xóa
+                var readers = await _context.Readers.Where(r => r.AccountId == id).ToListAsync();
+                foreach (var r in readers) r.AccountId = null;
+
                 _context.Accounts.Remove(acc);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Đã xóa tài khoản";

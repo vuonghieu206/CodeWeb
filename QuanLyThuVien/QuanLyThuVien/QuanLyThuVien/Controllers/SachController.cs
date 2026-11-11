@@ -7,7 +7,7 @@ using QuanLyThuVien.Services;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class SachController : Controller
+    public class SachController : StaffController
     {
         private const int PageSize = 8;
         private readonly LibraryDbContext _context;
@@ -46,18 +46,34 @@ namespace QuanLyThuVien.Controllers
 
             if (Request.IsAjax()) return PartialView("_BookTable", model);
 
-            ViewBag.Categories = await _context.Books.Where(b => b.Category != null && b.Category != "")
-                .Select(b => b.Category!).Distinct().OrderBy(c => c).ToListAsync();
+            ViewBag.Categories = await _context.Categories.OrderBy(c => c.Name).Select(c => c.Name).ToListAsync();
             return View(model);
         }
 
+        // Danh sách thể loại cho ô chọn trong form thêm/sửa sách (lấy từ mục Danh mục)
+        private async Task LoadCategoryListAsync() =>
+            ViewBag.CategoryList = await _context.Categories.OrderBy(c => c.Name).Select(c => c.Name).ToListAsync();
+
+        // Thể loại bắt buộc phải là danh mục đã có
+        private async Task ValidateCategoryAsync(Book model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Category) ||
+                !await _context.Categories.AnyAsync(c => c.Name == model.Category))
+                ModelState.AddModelError(nameof(Book.Category), "Vui lòng chọn thể loại trong danh sách (thêm ở mục Danh mục)");
+        }
+
         [HttpGet]
-        public IActionResult Create() => View(new Book { Quantity = 1 });
+        public async Task<IActionResult> Create()
+        {
+            await LoadCategoryListAsync();
+            return View(new Book { Quantity = 1 });
+        }
 
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Book model, IFormFile? coverFile)
         {
             model.CoverImage = null; // không cho client tự đặt đường dẫn ảnh
+            await ValidateCategoryAsync(model);
             if (coverFile != null && coverFile.Length > 0)
             {
                 var (path, error) = await _images.SaveAsync(coverFile);
@@ -67,6 +83,7 @@ namespace QuanLyThuVien.Controllers
             if (!ModelState.IsValid)
             {
                 _images.Delete(model.CoverImage);
+                await LoadCategoryListAsync();
                 return View(model);
             }
 
@@ -82,6 +99,7 @@ namespace QuanLyThuVien.Controllers
         {
             var book = await _context.Books.FindAsync(id);
             if (book == null) return NotFound();
+            await LoadCategoryListAsync();
             return View(book);
         }
 
@@ -92,6 +110,7 @@ namespace QuanLyThuVien.Controllers
             var book = await _context.Books.FindAsync(id);
             if (book == null) return NotFound();
 
+            await ValidateCategoryAsync(model);
             string? newCover = null;
             if (coverFile != null && coverFile.Length > 0)
             {
@@ -103,6 +122,7 @@ namespace QuanLyThuVien.Controllers
             {
                 _images.Delete(newCover);
                 model.CoverImage = book.CoverImage;
+                await LoadCategoryListAsync();
                 return View(model);
             }
 

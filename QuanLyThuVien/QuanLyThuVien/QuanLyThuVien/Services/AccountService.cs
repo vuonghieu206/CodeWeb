@@ -10,6 +10,14 @@ namespace QuanLyThuVien.Services
     {
         private readonly PasswordHasher<Account> _hasher = new();
 
+        /// <summary>Chính sách mật khẩu: tối thiểu 8 ký tự, có cả chữ và số. Trả về lỗi hoặc null nếu hợp lệ.</summary>
+        public static string? CheckStrength(string? pw)
+        {
+            if (string.IsNullOrEmpty(pw) || pw.Length < 8) return "Mật khẩu tối thiểu 8 ký tự";
+            if (!pw.Any(char.IsLetter) || !pw.Any(char.IsDigit)) return "Mật khẩu phải có cả chữ và số";
+            return null;
+        }
+
         public string Hash(Account acc, string plain) => _hasher.HashPassword(acc, plain);
 
         // Hash của PasswordHasher (format V3) luôn bắt đầu bằng "AQAAAA" khi mã hóa base64

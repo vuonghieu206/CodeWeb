@@ -6,7 +6,7 @@ using QuanLyThuVien.Services;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class PhatController : Controller
+    public class PhatController : StaffController
     {
         private const int PageSize = 10;
         private readonly LibraryDbContext _context;

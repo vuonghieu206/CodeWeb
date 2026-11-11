@@ -11,30 +11,14 @@ using QuanLyThuVien.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- MVC + mặc định "cần đăng nhập" cho toàn bộ site ----------
-// Controller nào công khai (Khách, Đăng nhập, API đọc sách) phải ghi [AllowAnonymous] -> an toàn theo mặc định.
-var staffPolicy = new AuthorizationPolicyBuilder()
-    .RequireAuthenticatedUser()
-    .RequireRole(AppRoles.Admin, AppRoles.ThuThu)
-    .Build();
-
+// ---------- MVC ----------
+// Mặc định mọi trang đều cần đăng nhập; trang công khai ghi [AllowAnonymous].
+// Các trang quản trị kế thừa StaffController (chỉ Admin/Thủ thư), trang độc giả dùng [Authorize(Roles = "Độc giả")].
 builder.Services
-    .AddControllersWithViews(options => options.Filters.Add(new AuthorizeFilter(staffPolicy)))
-    .AddViewLocalization()    // đa ngôn ngữ trong View
-    .AddDataAnnotationsLocalization(o =>   // dịch cả thông báo lỗi validation
-        o.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(QuanLyThuVien.SharedResource)));
+    .AddControllersWithViews(options => options.Filters.Add(new AuthorizeFilter()));
 
-// ---------- Quốc tế hóa (i18n): vi (mặc định) + en ----------
-builder.Services.AddLocalization(o => o.ResourcesPath = "Resources");
-var supportedCultures = new[] { new CultureInfo("vi"), new CultureInfo("en") };
-builder.Services.Configure<RequestLocalizationOptions>(o =>
-{
-    o.DefaultRequestCulture = new RequestCulture("vi");
-    o.SupportedCultures = supportedCultures;
-    o.SupportedUICultures = supportedCultures;
-    // Ưu tiên cookie ".AspNetCore.Culture" do nút chọn ngôn ngữ ghi ra
-    o.RequestCultureProviders = new List<IRequestCultureProvider> { new CookieRequestCultureProvider() };
-});
+// ---------- Định dạng ngày/số theo tiếng Việt (vi-VN) ----------
+var viCulture = new CultureInfo("vi-VN");
 
 // ---------- Database ----------
 builder.Services.AddDbContext<LibraryDbContext>(options =>
@@ -93,11 +77,14 @@ builder.Services.AddAntiforgery(o =>
 builder.Services.AddRateLimiter(o =>
 {
     o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddFixedWindowLimiter("login", c => { c.PermitLimit = 10; c.Window = TimeSpan.FromMinutes(1); c.QueueLimit = 0; });
+    o.AddFixedWindowLimiter("register", c => { c.PermitLimit = 10; c.Window = TimeSpan.FromMinutes(1); c.QueueLimit = 0; });
     o.AddFixedWindowLimiter("lookup", c => { c.PermitLimit = 10; c.Window = TimeSpan.FromMinutes(1); c.QueueLimit = 0; });
     o.AddFixedWindowLimiter("checkout", c => { c.PermitLimit = 10; c.Window = TimeSpan.FromMinutes(1); c.QueueLimit = 0; });
 });
 
 // ---------- Dịch vụ riêng ----------
+builder.Services.AddMemoryCache();   // đếm số lần đăng nhập sai
 builder.Services.AddSingleton<AccountService>();
 builder.Services.AddScoped<LateFeeService>();
 builder.Services.AddHostedService<OverdueFeeWorker>();   // tự ghi phạt phiếu quá hạn
@@ -124,11 +111,39 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
     db.Database.Migrate();
+    var accountService = scope.ServiceProvider.GetRequiredService<AccountService>();
+
     if (!db.Accounts.Any())
     {
-        var acc = new Account { Username = "admin", Role = AppRoles.Admin, IsActive = true };
-        acc.Password = scope.ServiceProvider.GetRequiredService<AccountService>().Hash(acc, "Admin@123");
-        db.Accounts.Add(acc);
+        // Tài khoản quản trị mẫu
+        var admin = new Account { Username = "admin", Role = AppRoles.Admin, IsActive = true };
+        admin.Password = accountService.Hash(admin, "Admin@123");
+        db.Accounts.Add(admin);
+
+        // Tài khoản độc giả mẫu để thử giao diện Khách
+        var demo = new Account { Username = "docgia", Role = AppRoles.DocGia, IsActive = true };
+        demo.Password = accountService.Hash(demo, "Docgia123");
+        db.Accounts.Add(demo);
+        db.SaveChanges();
+
+        db.Readers.Add(new Reader
+        {
+            FullName = "Độc giả Demo", PhoneNumber = "0912345678",
+            Email = "docgia@example.com", Address = "Hà Nội", AccountId = demo.Id
+        });
+        db.SaveChanges();
+    }
+
+    // Danh mục: lấy từ các thể loại sách đã có; nếu chưa có gì thì tạo vài danh mục mẫu
+    if (!db.Categories.Any())
+    {
+        var names = db.Books.Where(b => b.Category != null && b.Category != "")
+            .Select(b => b.Category!).ToList()
+            .Select(n => n.Trim()).Where(n => n.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        if (names.Count == 0)
+            names = new List<string> { "Thiếu nhi", "Tiểu thuyết", "Kỹ năng", "Công nghệ", "Khoa học", "Lịch sử" };
+        db.Categories.AddRange(names.Select(n => new Category { Name = n }));
         db.SaveChanges();
     }
 }
@@ -153,7 +168,12 @@ app.Use(async (ctx, next) =>
 });
 
 app.UseStaticFiles();   // phục vụ ảnh upload lúc chạy (MapStaticAssets chỉ biết file lúc build)
-app.UseRequestLocalization();
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(viCulture),
+    SupportedCultures = new List<CultureInfo> { viCulture },
+    SupportedUICultures = new List<CultureInfo> { viCulture }
+});
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
@@ -162,13 +182,7 @@ app.UseSession();
 
 app.MapStaticAssets();
 
-// "/" (F5) -> trang đăng nhập
-app.MapControllerRoute(
-    name: "root",
-    pattern: "",
-    defaults: new { controller = "Auth", action = "Login" });
-
-// Các địa chỉ còn lại: action mặc định là Index
+// "/" (F5) -> giao diện Khách
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=KhachHang}/{action=Index}/{id?}")

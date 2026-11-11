@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng nhập quản trị</title>
+    <title>Đăng nhập</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 </head>
@@ -17,8 +17,8 @@
             <div class="card-body p-4">
                 <div class="text-center mb-4">
                     <i class="bi bi-book-half text-primary" style="font-size: 3rem;"></i>
-                    <h4 class="mt-2 fw-bold">Đăng nhập quản trị</h4>
-                    <p class="text-muted small mb-0">Dành cho Admin / Thủ thư</p>
+                    <h4 class="mt-2 fw-bold">Đăng nhập</h4>
+                    <p class="text-muted small mb-0">Admin, Thủ thư hoặc Độc giả</p>
                 </div>
 
                 <form asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" method="post" novalidate>
@@ -40,7 +40,7 @@
                     <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
                 </form>
                 <div class="text-center mt-3">
-                    <a href="/KhachHang" class="small text-decoration-none"><i class="bi bi-arrow-left"></i> Về trang Khách</a>
+                    <a href="/KhachHang" class="small text-decoration-none"><i class="bi bi-arrow-left"></i> Về trang chủ</a>
                 </div>
             </div>
         </div>

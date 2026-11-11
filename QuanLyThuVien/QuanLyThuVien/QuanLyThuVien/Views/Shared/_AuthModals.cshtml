@@ -1,0 +1,90 @@
+@* Hộp thoại Đăng nhập + Đăng ký (chỉ hiện cho khách chưa đăng nhập). Gửi bằng AJAX, xử lý trong khach.js *@
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="loginForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginTitle"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loginError" class="alert alert-danger py-2 d-none"></div>
+                    <div class="mb-3">
+                        <label class="form-label" for="loginUsername">Tên đăng nhập</label>
+                        <input id="loginUsername" name="Username" class="form-control" autocomplete="username" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="loginPassword">Mật khẩu</label>
+                        <input id="loginPassword" name="Password" type="password" class="form-control" autocomplete="current-password" />
+                    </div>
+                    <div class="form-check">
+                        <input id="loginRemember" name="RememberMe" type="checkbox" value="true" class="form-check-input" />
+                        <label class="form-check-label" for="loginRemember">Ghi nhớ đăng nhập</label>
+                    </div>
+                </div>
+                <div class="modal-footer flex-column align-items-stretch">
+                    <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                    <div class="text-center small mt-2">Chưa có tài khoản? <a href="#" class="js-switch-register">Đăng ký ngay</a></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <form id="registerForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerTitle"><i class="bi bi-person-plus"></i> Đăng ký tài khoản</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="registerError" class="alert alert-danger py-2 d-none"></div>
+                    <h6 class="text-muted">Thông tin cá nhân</h6>
+                    <div class="mb-2">
+                        <label class="form-label">Họ và tên</label>
+                        <input name="FullName" class="form-control" maxlength="100" />
+                        <div class="text-danger small" data-err="FullName"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Email</label>
+                        <input name="Email" type="email" class="form-control" maxlength="150" />
+                        <div class="text-danger small" data-err="Email"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Số điện thoại</label>
+                        <input name="Phone" class="form-control" inputmode="tel" placeholder="0912345678" />
+                        <div class="text-danger small" data-err="Phone"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <input name="Address" class="form-control" maxlength="250" />
+                        <div class="text-danger small" data-err="Address"></div>
+                    </div>
+                    <h6 class="text-muted">Tài khoản</h6>
+                    <div class="mb-2">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <input name="Username" class="form-control" autocomplete="username" maxlength="50" />
+                        <div class="text-danger small" data-err="Username"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Mật khẩu</label>
+                        <input name="Password" type="password" class="form-control" autocomplete="new-password" />
+                        <div class="form-text">Tối thiểu 8 ký tự, gồm cả chữ và số.</div>
+                        <div class="text-danger small" data-err="Password"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nhập lại mật khẩu</label>
+                        <input name="ConfirmPassword" type="password" class="form-control" autocomplete="new-password" />
+                        <div class="text-danger small" data-err="ConfirmPassword"></div>
+                    </div>
+                </div>
+                <div class="modal-footer flex-column align-items-stretch">
+                    <button type="submit" class="btn btn-warning w-100">Đăng ký</button>
+                    <div class="text-center small mt-2">Đã có tài khoản? <a href="#" class="js-switch-login">Đăng nhập</a></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

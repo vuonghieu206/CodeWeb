@@ -21,6 +21,9 @@ namespace QuanLyThuVien.Models
         [StringLength(150)]
         public string? Email { get; set; }
 
+        // Có giá trị khi độc giả này được tạo từ việc đăng ký tài khoản trên website
+        public int? AccountId { get; set; }
+
         [StringLength(250, ErrorMessage = "Địa chỉ tối đa 250 ký tự")]
         [Display(Name = "Địa chỉ")]
         public string? Address { get; set; }

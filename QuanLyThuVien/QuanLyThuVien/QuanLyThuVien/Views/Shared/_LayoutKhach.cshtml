@@ -1,60 +1,79 @@
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
-    var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-    var cartCount = Context.Session.GetObject<List<int>>("cart")?.Count ?? 0;
+    var isAuth = User.Identity?.IsAuthenticated == true;
+    var isReader = User.IsInRole(AppRoles.DocGia);
+    var cartCount = isReader ? (Context.Session.GetObject<List<int>>("cart")?.Count ?? 0) : 0;
     var returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
 }
 <!DOCTYPE html>
-<html lang="@lang">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
-    <title>@ViewData["Title"] - @L["Thư Viện Trực Tuyến"]</title>
+    <meta name="return-url" content="@returnUrl" />
+    <title>@ViewData["Title"] - Thư Viện Trực Tuyến</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
-    <style>
-        .book-cover { height: 220px; object-fit: cover; }
-        .book-cover-placeholder { height: 220px; }
-        #toast-box { position: fixed; bottom: 1rem; right: 1rem; z-index: 2000; }
-        @@media (max-width: 575.98px) { .book-cover, .book-cover-placeholder { height: 180px; } }
-    </style>
+    <link rel="stylesheet" href="~/css/khach.css" asp-append-version="true" />
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" style="background:#1e3c72;">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="/KhachHang"><i class="bi bi-book-half"></i> @L["Thư Viện Trực Tuyến"]</a>
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="/KhachHang">
+                    <img src="~/img/logo.svg" alt="Logo" /> Thư Viện Trực Tuyến
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item"><a class="nav-link" href="/KhachHang">@L["Trang chủ"]</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/KhachHang"><i class="bi bi-house"></i> Trang chủ</a></li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/KhachHang/TraCuu"><i class="bi bi-clipboard-check"></i> @L["Tra cứu yêu cầu mượn"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/KhachHang/Cart">
-                                <i class="bi bi-basket"></i> @L["Giỏ mượn"]
+                            <a class="nav-link @(isReader ? "" : "js-require-login")" href="/KhachHang/Cart">
+                                <i class="bi bi-basket"></i> Giỏ mượn
                                 <span id="cart-count" class="badge bg-warning text-dark">@cartCount</span>
                             </a>
                         </li>
                     </ul>
+
                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <form asp-controller="KhachHang" asp-action="SetLanguage" method="post" class="d-flex gap-1">
-                            <input type="hidden" name="returnUrl" value="@returnUrl" />
-                            <button type="submit" name="culture" value="vi" class="btn btn-sm @(lang == "vi" ? "btn-light" : "btn-outline-light")">VI</button>
-                            <button type="submit" name="culture" value="en" class="btn btn-sm @(lang == "en" ? "btn-light" : "btn-outline-light")">EN</button>
-                        </form>
-                        @if (User.Identity?.IsAuthenticated == true)
+                        @if (isReader)
                         {
-                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light btn-sm">@L["Vào trang quản trị"]</a>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i> @User.Identity!.Name
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="/KhachHang/TaiKhoan"><i class="bi bi-person-vcard"></i> Thông tin tài khoản</a></li>
+                                    <li><a class="dropdown-item" href="/KhachHang/LichSu"><i class="bi bi-clock-history"></i> Lịch sử mượn</a></li>
+                                    <li><a class="dropdown-item" href="/KhachHang/Cart"><i class="bi bi-basket"></i> Giỏ mượn</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else if (isAuth)
+                        {
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-warning btn-sm"><i class="bi bi-speedometer2"></i> Vào trang quản trị</a>
+                            <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
+                            </form>
                         }
                         else
                         {
-                            <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-light btn-sm">@L["Đăng nhập Quản trị"]</a>
+                            <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <i class="bi bi-person-plus"></i> Đăng ký
+                            </button>
                         }
                     </div>
                 </div>
@@ -82,9 +101,25 @@
         </main>
     </div>
 
-    <footer class="bg-white border-top py-3 text-center text-muted small">
-        &copy; @DateTime.Now.Year - @L["Thư Viện Trực Tuyến"]
+    <footer class="site-footer py-4 mt-auto">
+        <div class="container">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="fw-bold fs-5"><i class="bi bi-book-half"></i> Thư Viện Trực Tuyến</div>
+                    <div class="small">Tra cứu sách, mượn sách và đánh giá mọi lúc mọi nơi.</div>
+                </div>
+                <div class="col-md-6 text-md-end small">
+                    <i class="bi bi-geo-alt"></i> Hà Nội &nbsp; <i class="bi bi-clock"></i> 8:00 - 17:00 (T2 - T6)<br />
+                    &copy; @DateTime.Now.Year - Hệ thống quản lý thư viện
+                </div>
+            </div>
+        </div>
     </footer>
+
+    @if (!isAuth)
+    {
+        <partial name="_AuthModals" />
+    }
 
     <div id="toast-box"></div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

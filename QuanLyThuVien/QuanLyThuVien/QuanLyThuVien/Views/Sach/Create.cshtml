@@ -24,7 +24,18 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="Category" class="form-label"></label>
-                            <input asp-for="Category" class="form-control" />
+                            @{ var cats = (List<string>)ViewBag.CategoryList; }
+                            <select asp-for="Category" class="form-select">
+                                <option value="">-- Chọn thể loại --</option>
+                                @foreach (var c in cats)
+                                {
+                                    <option value="@c" selected="@(c == Model.Category)">@c</option>
+                                }
+                            </select>
+                            @if (!cats.Any())
+                            {
+                                <div class="form-text text-danger">Chưa có danh mục nào. <a asp-controller="DanhMuc" asp-action="Create">Thêm danh mục</a> trước.</div>
+                            }
                             <span asp-validation-for="Category" class="text-danger"></span>
                         </div>
                     </div>

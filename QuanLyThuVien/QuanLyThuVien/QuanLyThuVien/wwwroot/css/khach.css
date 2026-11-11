@@ -1,0 +1,73 @@
+/* ===== Giao diện Khách ===== */
+body { background: #f4f6fb; }
+
+.navbar-brand img { height: 34px; width: 34px; margin-right: .5rem; border-radius: 8px; }
+
+/* Banner */
+.hero {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    color: #fff;
+    background: #2a5298 url('/img/hero.svg') center / cover no-repeat;
+    box-shadow: 0 .5rem 1.5rem rgba(30, 60, 114, .25);
+}
+.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(20, 40, 90, .85) 0%, rgba(20, 40, 90, .55) 55%, rgba(20, 40, 90, 0) 100%);
+}
+.hero-inner { position: relative; padding: 3rem 2rem; max-width: 640px; }
+.hero h1 { font-weight: 800; letter-spacing: .3px; }
+.hero .lead { opacity: .9; }
+@media (max-width: 767.98px) { .hero-inner { padding: 2rem 1.25rem; } .hero h1 { font-size: 1.6rem; } }
+
+/* Danh mục thể loại */
+.cat-card { border: 0; border-radius: .9rem; overflow: hidden; }
+.cat-card .list-group-item { border: 0; border-bottom: 1px solid #eef0f6; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.cat-card .list-group-item:hover { background: #eef3ff; }
+.cat-card .list-group-item.active { background: #2a5298; color: #fff; }
+.cat-card .list-group-item.active .badge { background: #fff !important; color: #2a5298 !important; }
+
+/* Thẻ sách */
+.book-card { border: 0; border-radius: .9rem; overflow: hidden; transition: transform .15s, box-shadow .15s; }
+.book-card:hover { transform: translateY(-4px); box-shadow: 0 .75rem 1.5rem rgba(0, 0, 0, .12) !important; }
+.book-cover { height: 230px; width: 100%; object-fit: cover; background: #e8f0ff; }
+@media (max-width: 575.98px) { .book-cover { height: 190px; } }
+
+/* Sao đánh giá (hiển thị theo điểm trung bình) */
+.stars {
+    --percent: calc(var(--rating, 0) / 5 * 100%);
+    display: inline-block; font-size: 1.05rem; line-height: 1; letter-spacing: 2px;
+}
+.stars::before {
+    content: '★★★★★';
+    background: linear-gradient(90deg, #f5b301 var(--percent), #d5d8e0 var(--percent));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Chọn sao khi đánh giá */
+.star-picker { display: inline-flex; gap: .15rem; }
+.star-btn { background: none; border: 0; padding: 0 .1rem; font-size: 2rem; line-height: 1; color: #d5d8e0; cursor: pointer; transition: transform .1s; }
+.star-btn.on, .star-btn.hover { color: #f5b301; }
+.star-btn:hover { transform: scale(1.15); }
+
+.review-item { border-bottom: 1px solid #eef0f6; padding: 1rem 0; }
+.review-item:last-child { border-bottom: 0; }
+.review-avatar {
+    width: 42px; height: 42px; border-radius: 50%; flex: 0 0 42px;
+    background: linear-gradient(135deg, #2a5298, #7b4fb8); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+}
+.review-text { white-space: pre-line; word-break: break-word; }
+
+/* Trang tài khoản */
+.account-title { font-weight: 300; font-size: 2.2rem; }
+.account-card .form-label { font-weight: 600; font-size: .9rem; }
+.account-card .form-label::before { content: '*'; color: #dc3545; margin-right: .25rem; }
+
+#toast-box { position: fixed; bottom: 1rem; right: 1rem; z-index: 2000; max-width: 90vw; }
+
+footer.site-footer { background: #1e3c72; color: #cfd9f2; }
+footer.site-footer a { color: #fff; text-decoration: none; }

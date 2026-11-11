@@ -1,0 +1,88 @@
+@model ProfileViewModel
+@{
+    Layout = "_LayoutKhach";
+    ViewData["Title"] = "Tài khoản";
+}
+
+<div class="row g-5 account-card">
+    <div class="col-lg-7">
+        <h2 class="account-title mb-4">Thông Tin Cá Nhân</h2>
+        <form asp-action="TaiKhoan" method="post" novalidate>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </form>
+    </div>
+
+    <div class="col-lg-5">
+        <h2 class="account-title mb-4">Tài Khoản</h2>
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input class="form-control" value="@User.Identity!.Name" disabled />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input class="form-control" value="*********" disabled />
+        </div>
+        <button type="button" class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#pwModal">Đổi mật khẩu</button>
+        <div class="mt-4">
+            <a href="/KhachHang/LichSu" class="btn btn-outline-primary btn-sm"><i class="bi bi-clock-history"></i> Xem lịch sử mượn</a>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="pwModal" tabindex="-1" aria-labelledby="pwTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="pwForm" novalidate>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pwTitle">Đổi mật khẩu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="pwError" class="alert alert-danger py-2 d-none"></div>
+                    <div class="mb-2">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input name="CurrentPassword" type="password" class="form-control" autocomplete="current-password" />
+                        <div class="text-danger small" data-err="CurrentPassword"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input name="NewPassword" type="password" class="form-control" autocomplete="new-password" />
+                        <div class="form-text">Tối thiểu 8 ký tự, gồm cả chữ và số.</div>
+                        <div class="text-danger small" data-err="NewPassword"></div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nhập lại mật khẩu mới</label>
+                        <input name="ConfirmPassword" type="password" class="form-control" autocomplete="new-password" />
+                        <div class="text-danger small" data-err="ConfirmPassword"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

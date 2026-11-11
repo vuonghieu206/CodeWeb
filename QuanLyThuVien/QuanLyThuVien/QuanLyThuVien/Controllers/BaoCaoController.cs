@@ -28,7 +28,7 @@ namespace QuanLyThuVien.Controllers
         public int Count { get; set; }
     }
 
-    public class BaoCaoController : Controller
+    public class BaoCaoController : StaffController
     {
         private readonly LibraryDbContext _context;
 

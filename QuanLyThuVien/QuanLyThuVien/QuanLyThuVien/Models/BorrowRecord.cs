@@ -16,6 +16,9 @@ namespace QuanLyThuVien.Models
         [Key]
         public int Id { get; set; }
 
+        // Tài khoản độc giả gửi yêu cầu (null nếu thủ thư tạo phiếu tại quầy / dữ liệu cũ)
+        public int? AccountId { get; set; }
+
         // Liên kết mềm tới Books.Id (dữ liệu cũ có thể null)
         public int? BookId { get; set; }
 

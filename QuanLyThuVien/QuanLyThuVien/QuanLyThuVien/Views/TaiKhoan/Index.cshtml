@@ -1,29 +1,44 @@
-@model IEnumerable<Account>
+@model PaginatedList<Account>
 @{
     ViewData["Title"] = "Quản lý Tài khoản";
+    string role = ViewBag.Role as string ?? "";
 }
 <div class="card mt-3">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title mb-0">Hệ thống Tài khoản</h3>
-        <a asp-action="Create" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Cấp tài khoản</a>
+        <a asp-action="Create" class="btn btn-success btn-sm"><i class="bi bi-plus-circle"></i> Cấp tài khoản nhân viên</a>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body">
+        <form method="get" action="/TaiKhoan" class="row g-2 mb-3">
+            <div class="col-12 col-md-5">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm theo tên đăng nhập..." />
+            </div>
+            <div class="col-6 col-md-3">
+                <select name="role" class="form-select">
+                    <option value="" selected="@(role == "")">-- Mọi vai trò --</option>
+                    <option value="Admin" selected="@(role == "Admin")">Admin</option>
+                    <option value="Thủ thư" selected="@(role == "Thủ thư")">Thủ thư</option>
+                    <option value="Độc giả" selected="@(role == "Độc giả")">Độc giả</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2 d-grid"><button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Lọc</button></div>
+        </form>
         <div class="table-responsive">
             <table class="table table-striped table-hover mb-0">
                 <thead class="table-dark">
                     <tr><th>ID</th><th>Tên đăng nhập</th><th>Vai trò</th><th>Trạng thái</th><th style="width:130px">Thao tác</th></tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Any())
+                    @if (!Model.Items.Any())
                     {
-                        <tr><td colspan="5" class="text-center py-3">Chưa có tài khoản nào.</td></tr>
+                        <tr><td colspan="5" class="text-center py-3">Không có tài khoản nào.</td></tr>
                     }
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {
                         <tr>
                             <td>@item.Id</td>
                             <td>@item.Username</td>
-                            <td><span class="badge bg-info text-dark">@item.Role</span></td>
+                            <td><span class="badge @(item.Role == "Độc giả" ? "bg-secondary" : "bg-info text-dark")">@item.Role</span></td>
                             <td><span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">@(item.IsActive ? "Hoạt động" : "Bị khóa")</span></td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></a>
@@ -36,5 +51,7 @@
                 </tbody>
             </table>
         </div>
+        <div class="small text-muted mt-2">Tổng: @Model.TotalItems tài khoản. Tài khoản độc giả do khách tự đăng ký trên website.</div>
+        <partial name="_Pager" model="Model" />
     </div>
 </div>

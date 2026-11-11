@@ -6,6 +6,7 @@ namespace QuanLyThuVien.Models
     {
         public const string Admin = "Admin";
         public const string ThuThu = "Thủ thư";
+        public const string DocGia = "Độc giả";        // tài khoản khách đăng ký trên website
         public const string Staff = Admin + "," + ThuThu; // dùng cho [Authorize(Roles = ...)]
     }
 

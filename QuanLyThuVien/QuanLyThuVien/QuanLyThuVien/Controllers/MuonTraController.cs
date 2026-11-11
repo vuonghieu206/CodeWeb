@@ -7,7 +7,7 @@ using QuanLyThuVien.Services;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class MuonTraController : Controller
+    public class MuonTraController : StaffController
     {
         private const int PageSize = 10;
         private const int LoanDays = 14;

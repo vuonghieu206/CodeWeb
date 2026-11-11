@@ -1,38 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QuanLyThuVien.Helpers;
 using QuanLyThuVien.Models;
-using System.Linq;
 
 namespace QuanLyThuVien.Controllers
 {
-    public class TheLoaiController : Controller
+    public class TheLoaiController : StaffController
     {
+        private const int PageSize = 8;
         private readonly LibraryDbContext _context;
 
-        public TheLoaiController(LibraryDbContext context)
-        {
-            _context = context;
-        }
+        public TheLoaiController(LibraryDbContext context) { _context = context; }
 
-        public IActionResult Index(string searchString)
+        public async Task<IActionResult> Index(string? searchString, int page = 1)
         {
             ViewData["CurrentFilter"] = searchString;
 
-            // 1. Thống kê số lượng theo thể loại truyền ra ViewBag
-            ViewBag.TheLoaiStats = _context.Books
+            // Thống kê số lượng sách theo thể loại
+            ViewBag.TheLoaiStats = await _context.Books
                 .GroupBy(b => b.Category)
-                .Select(g => new {
-                    CategoryName = string.IsNullOrEmpty(g.Key) ? "Chưa phân loại" : g.Key,
+                .Select(g => new
+                {
+                    CategoryName = g.Key == null || g.Key == "" ? "Chưa phân loại" : g.Key,
                     Count = g.Sum(b => b.Quantity)
-                }).ToList();
+                }).ToListAsync();
 
-            // 2. Lọc sách theo từ khóa tìm kiếm
-            var books = from b in _context.Books select b;
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                books = books.Where(s => s.Category.Contains(searchString) || s.Title.Contains(searchString));
-            }
+            var books = _context.Books.AsNoTracking().AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchString))
+                books = books.Where(s => (s.Category != null && s.Category.Contains(searchString)) || s.Title.Contains(searchString));
 
-            return View(books.ToList());
+            var model = await PaginatedList<Book>.CreateAsync(books.OrderBy(b => b.Title), page, PageSize);
+            return View(model);
         }
     }
 }
